@@ -8,7 +8,7 @@ import asyncio
 import json
 import os
 import threading
-
+import subprocess
 import http.server
 import socketserver
 
@@ -52,8 +52,22 @@ def salvar_lancamentos_notificados(lancamentos):
         with open(JSON_FILE, 'w', encoding='utf-8') as file:
             json.dump(lancamentos, file, ensure_ascii=False, indent=4)
         logging.info("Lançamentos notificados salvos com sucesso.")
+        
+        # Fazer commit e push para o GitHub
+        commit_and_push_to_github()
+        
     except Exception as e:
         logging.error(f"Erro ao salvar lançamentos no arquivo JSON: {e}")
+
+# Função para fazer o commit e push para o GitHub
+def commit_and_push_to_github():
+    try:
+        subprocess.run(["git", "add", "lancamentos_notificados.json"], check=True)
+        subprocess.run(["git", "commit", "-m", "Atualizando lançamentos notificados"], check=True)
+        subprocess.run(["git", "push", "origin", "main"], check=True)  # ou "master", dependendo da sua branch
+        logging.info("Arquivo JSON atualizado e enviado para o GitHub com sucesso.")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Erro ao fazer push do arquivo JSON: {e}")
 
 # Carrega os lançamentos notificados ao iniciar
 lancamentos_notificados = carregar_lancamentos_notificados()
@@ -132,7 +146,7 @@ async def enviar_mensagem(lancamento, delay=10):
             message_thread_id=TOPIC_ID  # Envia para o tópico específico
         )
         logging.info(f"Mensagem enviada: {lancamento['titulo']}")
-        
+
         # Salvar lançamento notificado no arquivo JSON
         lancamentos_notificados.append({
             'link': lancamento['link'],
@@ -160,7 +174,7 @@ def iniciar_monitoramento():
     asyncio.run(monitorar_lancamentos())
 
 # Executa o servidor HTTP e o monitoramento de lançamentos em threads diferentes
-if __name__ == "__main__":
+if __name__ == "__main__":    
     # Inicia o servidor HTTP em uma nova thread
     servidor_thread = threading.Thread(target=iniciar_servidor)
     servidor_thread.start()
