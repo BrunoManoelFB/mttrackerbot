@@ -11,14 +11,10 @@ import os
 # Configuração do logging para debug
 logging.basicConfig(level=logging.INFO)
 
-# Coloque o token do seu bot aqui
-BOT_TOKEN = '7752273623:AAGomzFMmob-LJS07lkRHTuwc0Ut9laYVRw'
-# Coloque o chat_id do seu grupo aqui
-#CHAT_ID = '-4559159157'  # TESTES
-CHAT_ID = '-1001667888831'  # GRUPO OFICIAL
-
-# ID do tópico do grupo onde as mensagens serão enviadas
-TOPIC_ID = 18717  # Substitua este valor pelo ID real do tópico
+# Obtendo o token do bot, chat_id e topic_id das variáveis de ambiente
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+CHAT_ID = os.getenv('CHAT_ID')
+TOPIC_ID = os.getenv('TOPIC_ID')
 
 # URL do site que será monitorado
 url = 'https://multitracks.com.br/songs/?order=recent&label=Lançamentos'
