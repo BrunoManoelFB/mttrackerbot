@@ -7,17 +7,20 @@ from telegram import Bot
 import asyncio
 import json
 import os
+import threading
 
 import http.server
 import socketserver
 
+# Configuração do servidor HTTP
 PORT = 8000
 
 Handler = http.server.SimpleHTTPRequestHandler
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Serving at port {PORT}")
-    httpd.serve_forever()
+def iniciar_servidor():
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print(f"Serving at port {PORT}")
+        httpd.serve_forever()
 
 # Configuração do logging para debug
 logging.basicConfig(level=logging.INFO)
@@ -148,6 +151,20 @@ async def monitorar_lancamentos():
 
         await asyncio.sleep(600)  # Verifica a cada 10 minutos
 
-# Executa o loop de monitoramento
-if __name__ == "__main__":
+# Função para iniciar o loop de monitoramento do bot
+def iniciar_monitoramento():
     asyncio.run(monitorar_lancamentos())
+
+# Executa o servidor HTTP e o monitoramento de lançamentos em threads diferentes
+if __name__ == "__main__":
+    # Inicia o servidor HTTP em uma nova thread
+    servidor_thread = threading.Thread(target=iniciar_servidor)
+    servidor_thread.start()
+
+    # Inicia o monitoramento de lançamentos em uma nova thread
+    monitoramento_thread = threading.Thread(target=iniciar_monitoramento)
+    monitoramento_thread.start()
+
+    # Espera ambas as threads completarem (o que provavelmente nunca vai acontecer)
+    servidor_thread.join()
+    monitoramento_thread.join()
