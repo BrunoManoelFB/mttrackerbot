@@ -8,6 +8,17 @@ import asyncio
 import json
 import os
 
+import http.server
+import socketserver
+
+PORT = 8000
+
+Handler = http.server.SimpleHTTPRequestHandler
+
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    print(f"Serving at port {PORT}")
+    httpd.serve_forever()
+
 # Configuração do logging para debug
 logging.basicConfig(level=logging.INFO)
 
