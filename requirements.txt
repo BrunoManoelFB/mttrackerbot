@@ -1,8 +1,4 @@
 requests
 beautifulsoup4
-time
-logging
 telegram
-asyncio
-json
-os
+python-telegram-bot
