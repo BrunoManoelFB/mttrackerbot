@@ -48,8 +48,12 @@ def carregar_lancamentos_notificados():
 
 # Função para salvar os lançamentos notificados no arquivo JSON
 def salvar_lancamentos_notificados(lancamentos):
-    with open(JSON_FILE, 'w', encoding='utf-8') as file:
-        json.dump(lancamentos, file, ensure_ascii=False, indent=4)
+    try:
+        with open(JSON_FILE, 'w', encoding='utf-8') as file:
+            json.dump(lancamentos, file, ensure_ascii=False, indent=4)
+        logging.info("Lançamentos notificados salvos com sucesso.")
+    except Exception as e:
+        logging.error(f"Erro ao salvar lançamentos no arquivo JSON: {e}")
 
 # Carrega os lançamentos notificados ao iniciar
 lancamentos_notificados = carregar_lancamentos_notificados()
